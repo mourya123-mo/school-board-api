@@ -18,6 +18,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import com.school.sba.exception.ConstraintVoilationException;
 import com.school.sba.exception.DuplicateEntryException;
+import com.school.sba.exception.ScheduleNotFoundByIdException;
+import com.school.sba.exception.UserNotFoundByIdException;
 
 @RestControllerAdvice
 public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler {
@@ -44,14 +46,26 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
 
 	@ExceptionHandler(ConstraintVoilationException.class)
 	public ResponseEntity<Object> handleConstraintVailationException(ConstraintVoilationException ex) {
-		return structure(HttpStatus.BAD_REQUEST, ex.getMessage(), ex.getRootcause());
+		return new ResponseEntity<Object>(structure(HttpStatus.ALREADY_REPORTED, ex.getMessage(), "school already created"),HttpStatus.ALREADY_REPORTED);
 
 	}
 
 	@ExceptionHandler(DuplicateEntryException.class)
 	public ResponseEntity<Object> handleDuplicateEntityException(DuplicateEntryException ex) {
-		return structure(HttpStatus.NOT_ACCEPTABLE, ex.getMessage(), ex.getRootcause());
+		return new ResponseEntity<Object>(structure(HttpStatus.NOT_ACCEPTABLE,ex.getMessage(),"duplicate entry of username"),HttpStatus.NOT_ACCEPTABLE);
 
 	}
+	@ExceptionHandler(UserNotFoundByIdException.class)
+	public ResponseEntity<Object> handleUserNotFoundByIdException(UserNotFoundByIdException ex) {
+		return new ResponseEntity<Object>( structure(HttpStatus.NOT_FOUND, ex.getMessage(), "user not found with given id"),HttpStatus.NOT_FOUND);
+
+	}
+	
+	@ExceptionHandler(ScheduleNotFoundByIdException.class)
+	public ResponseEntity<Object> handleScheduleNotFoundByIdException(ScheduleNotFoundByIdException ex){
+		return new ResponseEntity<Object>(structure(HttpStatus.NOT_FOUND, ex.getMessage(), "schedule not found by given id"),HttpStatus.NOT_FOUND);
+	}
+
+			
 
 }

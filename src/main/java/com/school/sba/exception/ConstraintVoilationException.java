@@ -8,9 +8,9 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ConstraintVoilationException extends Exception {
-	private int status;
+public class ConstraintVoilationException extends RuntimeException {
+	
 	private String message;
-	private String rootcause;
+	
 
 }

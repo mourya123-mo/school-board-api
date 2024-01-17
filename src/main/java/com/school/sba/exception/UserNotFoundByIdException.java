@@ -5,10 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-
 @AllArgsConstructor
 @NoArgsConstructor
-public class DuplicateEntryException extends RuntimeException {
+public class UserNotFoundByIdException extends RuntimeException {
 
 	
 	private String message;

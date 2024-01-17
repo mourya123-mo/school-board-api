@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.school.sba.entity.User;
 import com.school.sba.enums.UserRole;
-import com.school.sba.exception.ConstraintVoilationException;
 import com.school.sba.exception.DuplicateEntryException;
+import com.school.sba.exception.UserNotFoundByIdException;
 import com.school.sba.repository.UserRepo;
 import com.school.sba.requestdto.UserRequest;
 import com.school.sba.responsedto.UserResponse;
@@ -37,6 +37,7 @@ public class UserServiceImpl implements UserService {
 				.email(user.getEmail()).userRole(user.getUserRole()).build();
 	}
 
+/*----------------------------->To regester user <-----------------------------*/
 	int count = 0;
 
 	@Override
@@ -50,18 +51,50 @@ public class UserServiceImpl implements UserService {
 			try {
 				user = userRepo.save(user);
 			} catch (Exception e) {
-				throw new DuplicateEntryException(HttpStatus.ALREADY_REPORTED.value(), "Duplicate entry",
-						"please check user details entered");
+				throw new DuplicateEntryException("username should be unique");
 			}
 			structure.setStatus(HttpStatus.CREATED.value());
 			structure.setMessage("data saved sucessful");
 			structure.setData(mapToUserResponse(user));
 
 		} else {
-			throw new DuplicateEntryException(HttpStatus.NON_AUTHORITATIVE_INFORMATION.value(),
-					"there can only be admin", "please check admin details");
+			throw new DuplicateEntryException("there can only be one admin");
+					
 		}
 		return new ResponseEntity<ResponseStructure<UserResponse>>(structure, HttpStatus.CREATED);
 	}
+	
+	/*------------------------------------->To get user by Id <-----------------------------*/
 
+	@Override
+	public ResponseEntity<ResponseStructure<UserResponse>> getUserById(int userId) throws UserNotFoundByIdException {
+		User user=new User();
+		try {
+			user = userRepo.findById(userId).get();
+					
+		} catch (Exception e) {
+			
+			throw new UserNotFoundByIdException("user not present in database");
+		}
+		structure.setStatus(HttpStatus.FOUND.value());
+		structure.setMessage("user with given id found");
+		structure.setData(mapToUserResponse(user));
+		return new ResponseEntity<ResponseStructure<UserResponse>>(structure,HttpStatus.FOUND) ;
+	}
+
+	/*------------------------>soft delete <--------------------------------------------*/
+	@Override
+	public ResponseEntity<ResponseStructure<UserResponse>> deleteUserById (int userId)  {
+		
+   User user = userRepo.findById(userId).orElseThrow(()-> new UserNotFoundByIdException("user not present in database"));
+	   if(user.isDeleted()==false)
+		   user.setDeleted(true);
+	   User  user2	=  userRepo.save(user);
+	   structure.setStatus(HttpStatus.OK.value());
+	   structure.setMessage("deleted status updated sucessfully");
+	   structure.setData(mapToUserResponse(user2));
+		
+		return new  ResponseEntity<ResponseStructure<UserResponse>>(structure,HttpStatus.OK);
+	}
+	
 }

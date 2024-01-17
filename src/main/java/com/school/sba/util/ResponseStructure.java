@@ -2,6 +2,9 @@ package com.school.sba.util;
 
 import org.springframework.stereotype.Component;
 
+import com.school.sba.entity.User;
+import com.school.sba.responsedto.SchoolResponse;
+
 import lombok.Getter;
 import lombok.Setter;
 

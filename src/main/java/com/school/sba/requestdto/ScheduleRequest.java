@@ -15,10 +15,10 @@ import lombok.Setter;
 @Builder
 public class ScheduleRequest {
 
-	private LocalTime opensAt;
+	private LocalTime opeansAt;
 	private LocalTime closesAt;
-	private int classHourPerDay;
-	private int classHourLengthInMinutes;
+	private int classHoursPerDay;
+	private int classHoursLengthInMinutes;
 	private LocalTime breakTime;
 	private int breakLengthInMinutes;
 	private LocalTime lunchTime;

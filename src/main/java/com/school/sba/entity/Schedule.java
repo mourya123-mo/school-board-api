@@ -26,10 +26,10 @@ public class Schedule {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int scheduleId;
-	private LocalTime opensAt;
+	private LocalTime opeansAt;
 	private LocalTime closesAt;
-	private int classHourPerDay;
-	private Duration classHourLengthInMinutes;
+	private int classHoursPerDay;
+	private Duration classHoursLengthInMinutes;
 	private LocalTime breakTime;
 	private Duration breakLengthInMinutes;
 	private LocalTime lunchTime;

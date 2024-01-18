@@ -12,7 +12,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 public class SchoolRequest {
-
 	private String schoolName;
 	private long contactNo;
 	private String emailId;

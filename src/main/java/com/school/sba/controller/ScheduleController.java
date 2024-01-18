@@ -21,7 +21,7 @@ public class ScheduleController {
 	private ScheduleService scheduleService;
 
 	@PostMapping("/schools/{schoolId}/schedules")
-	public ResponseEntity<ResponseStructure<ScheduleResponse>> addSchedule( @PathVariable int schoolId,ScheduleRequest scheduleRequest){
+	public ResponseEntity<ResponseStructure<ScheduleResponse>> addSchedule( @PathVariable int schoolId,@RequestBody ScheduleRequest scheduleRequest){
 		
 		return scheduleService.addSchedule(schoolId,scheduleRequest);
 	}

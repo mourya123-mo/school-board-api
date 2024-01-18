@@ -1,6 +1,5 @@
 package com.school.sba.responsedto;
 
-import java.time.Duration;
 import java.time.LocalTime;
 
 import lombok.AllArgsConstructor;
@@ -16,12 +15,12 @@ import lombok.Setter;
 @Builder
 public class ScheduleResponse {
 	private int scheduleId;
-	private LocalTime opensAt;
+	private LocalTime opeansAt;
 	private LocalTime closesAt;
-	private int classHourPerDay;
-	private Duration classHourLengthInMinutes;
+	private int classHoursPerDay;
+	private int classHoursLengthInMinutes;
 	private LocalTime breakTime;
-	private Duration breakLengthInMinutes;
+	private int breakLengthInMinutes;
 	private LocalTime lunchTime;
-	private Duration lunchLengthInMinutes;
+	private int lunchLengthInMinutes;
 }

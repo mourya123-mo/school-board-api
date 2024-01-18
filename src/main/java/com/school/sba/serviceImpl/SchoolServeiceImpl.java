@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.school.sba.entity.School;
-import com.school.sba.entity.User;
 import com.school.sba.enums.UserRole;
 import com.school.sba.exception.ConstraintVoilationException;
 import com.school.sba.exception.UserNotFoundByIdException;
@@ -41,23 +40,23 @@ public class SchoolServeiceImpl implements SchoolService {
 	}
 
 	public ResponseEntity<ResponseStructure<SchoolResponse>> createSchool(int userId, SchoolRequest schoolRequest) {
-		return userRepo.findById(userId).map(u->{
-			if(u.getUserRole().equals(UserRole.ADMIN)) {
-				if(u.getSchool()==null) {
+		return userRepo.findById(userId).map(u -> {
+			if (u.getUserRole().equals(UserRole.ADMIN)) {
+				if (u.getSchool() == null) {
 					School school = mapToSchool(schoolRequest);
-					school=schoolRepo.save(school);//saved the new school
+					school = schoolRepo.save(school);// saved the new school
 					u.setSchool(school);// update user with new school
 					userRepo.save(u);
 					structure.setStatus(HttpStatus.CREATED.value());
 					structure.setMessage("school saved sucessfully");
 					structure.setData(mapToSchoolResponse(school));
-					return new ResponseEntity<ResponseStructure<SchoolResponse>>(structure,HttpStatus.CREATED);
-				}else 
+					return new ResponseEntity<ResponseStructure<SchoolResponse>>(structure, HttpStatus.CREATED);
+				} else
 					throw new UserNotFoundByIdException("user id not present in database");
-				
-			}else
-				throw new ConstraintVoilationException("only admin can create school ");
-		}).orElseThrow(()-> new UserNotFoundByIdException("failed to save school") );
 
-}
+			} else
+				throw new ConstraintVoilationException("only admin can create school ");
+		}).orElseThrow(() -> new UserNotFoundByIdException("failed to save school"));
+
+	}
 }

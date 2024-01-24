@@ -27,6 +27,11 @@ private UserService userService;
 		
 		return userService.regesterUser(userRequest);
 	}
+//	@PostMapping("/users/{userId}/register")
+//	public ResponseEntity<ResponseStructure<UserResponse>> regesterAdmin(@RequestBody @Valid UserRequest userRequest,@PathVariable int userId) {
+		
+//		return userService.regesterAdmin(userRequest,userId);
+//	}
 	
 	@GetMapping("/users/{userId}")
 	public ResponseEntity<ResponseStructure<UserResponse>> getUserById(@PathVariable int userId) throws UserNotFoundByIdException{

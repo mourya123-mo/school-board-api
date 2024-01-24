@@ -8,12 +8,17 @@ import com.school.sba.requestdto.UserRequest;
 import com.school.sba.responsedto.UserResponse;
 import com.school.sba.util.ResponseStructure;
 
+import jakarta.validation.Valid;
+
 public interface UserService  {
 
 	ResponseEntity<ResponseStructure<UserResponse>> regesterUser(UserRequest userRequest);
 
+//	ResponseEntity<ResponseStructure<UserResponse>> regesterAdmin(@Valid UserRequest userRequest, int userId);
+	
 	ResponseEntity<ResponseStructure<UserResponse>> getUserById(int userId) throws UserNotFoundByIdException;
 
 	ResponseEntity<ResponseStructure<UserResponse>> deleteUserById(int userId) throws UserNotFoundByIdException;
+
 
 }

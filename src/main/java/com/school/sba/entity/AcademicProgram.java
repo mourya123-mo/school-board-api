@@ -1,10 +1,10 @@
 package com.school.sba.entity;
 
+import java.time.LocalDate;
 import java.util.List;
 
-import com.school.sba.enums.UserRole;
+import com.school.sba.enums.ProgramType;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,33 +17,27 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
 @Getter
 @Setter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class User {
+@NoArgsConstructor
+@Entity
+public class AcademicProgram {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int userId;
-	@Column(unique = true)
-	private String userName;
-	private String password;
-	private String firstName;
-	private String lastName;
-	private long contactNo;
-	@Column(unique = true)
-	private String email;
-	private UserRole userRole;
-	private boolean isDeleted;
-	
-	
+	private int programId;
+	private ProgramType programType;
+	private String programName;
+	private LocalDate beginsAt;
+	private LocalDate endsAt;
+
 	@ManyToOne
 	private School school;
-	@ManyToMany(mappedBy = "users")
-	private List<AcademicProgram> academicPrograms;
-	@ManyToOne
-	private Subject subject;
+	@ManyToMany
+	private List<Subject> subjects;
 	
+	@ManyToMany
+	private List<User> users;
 }

@@ -32,7 +32,7 @@ public class ScheduleController {
 		return scheduleService.getSchedule(schoolId);
 	}
 	@PutMapping("/schedules/{scheduleId}")
-	public ResponseEntity<ResponseStructure<ScheduleResponse>> updateSchedule(@PathVariable int scheduleId , ScheduleRequest scheduleRequest){
+	public ResponseEntity<ResponseStructure<ScheduleResponse>> updateSchedule(@PathVariable int scheduleId , @RequestBody ScheduleRequest scheduleRequest){
 		return scheduleService.updateSchedule(scheduleId,scheduleRequest);
 	}
 }

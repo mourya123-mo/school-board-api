@@ -1,40 +1,29 @@
 package com.school.sba.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.school.sba.entity.School;
+import com.school.sba.requestdto.SchoolRequest;
+import com.school.sba.responsedto.SchoolResponse;
 import com.school.sba.service.SchoolService;
+import com.school.sba.util.ResponseStructure;
 
 @Controller
 public class SchoolController {
 	@Autowired
-	private SchoolService service;
+	private SchoolService schoolservice;
 
-	public void saveSchool(String schoolName, long contactNo, String emailId, String Adress) {
+	@PostMapping("/user/{userId}/schools")
+public ResponseEntity<ResponseStructure<SchoolResponse>> createSchool( @PathVariable int userId ,@RequestBody SchoolRequest schoolRequest){
+	
+		return schoolservice.createSchool(userId, schoolRequest);
+}
 
-		service.saveSchool(schoolName, contactNo, emailId, Adress);
-
-	}
-
-	public List<School> fetchAll() {
-
-		return service.fetchAll();
-	}
-
-	public void getSchoolById(int schoolId) {
-
-		service.getSchoolById(schoolId);
-	}
-
-	public String updateSchoolBtId(int schoolId, String schoolName, long contactNo, String emailId, String Adress) {
-		return service.updateSchoolById(schoolId, schoolName, contactNo, emailId, Adress);
-	}
-
-	public String deleteSchoolById(int SchoolId) {
-		return service.deleteSchoolById(SchoolId);
-	}
+	
 
 }

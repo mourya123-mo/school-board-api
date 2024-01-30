@@ -1,8 +1,11 @@
 package com.school.sba.serviceImpl;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.school.sba.entity.School;
@@ -39,8 +42,9 @@ public class SchoolServeiceImpl implements SchoolService {
 
 	}
 
-	public ResponseEntity<ResponseStructure<SchoolResponse>> createSchool(int userId, SchoolRequest schoolRequest) {
-		return userRepo.findById(userId).map(u -> {
+	public ResponseEntity<ResponseStructure<SchoolResponse>> createSchool(SchoolRequest schoolRequest) {
+		String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+		return userRepo.findByUserName(userName).map(u -> {
 			if (u.getUserRole().equals(UserRole.ADMIN)) {
 				if (u.getSchool() == null) {
 					School school = mapToSchool(schoolRequest);
@@ -58,5 +62,19 @@ public class SchoolServeiceImpl implements SchoolService {
 				throw new ConstraintVoilationException("only admin can create school ");
 		}).orElseThrow(() -> new UserNotFoundByIdException("failed to save school"));
 
+	}
+
+	@Override
+	public ResponseEntity<ResponseStructure<SchoolResponse>> deleteById(int schoolId) {
+	School school = schoolRepo.findById(schoolId).orElseThrow(()-> new UserNotFoundByIdException("school with given id is not present"));
+		if(school.isDeleted()==false) {
+			school.setDeleted(true);
+			schoolRepo.save(school);
+		}
+		structure.setStatus(HttpStatus.OK.value());
+		structure.setMessage("softdeleted sucessfull");
+		structure.setData(mapToSchoolResponse(school));
+		
+		return new ResponseEntity<ResponseStructure<SchoolResponse>>(structure,HttpStatus.OK);
 	}
 }

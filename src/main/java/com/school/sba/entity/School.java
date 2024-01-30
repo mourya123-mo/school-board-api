@@ -30,6 +30,7 @@ public class School {
 	private long contactNo;
 	private String emailId;
 	private String Adress;
+	private boolean isDeleted;
 
 	@OneToMany
 	private List<User> users;

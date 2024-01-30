@@ -2,7 +2,9 @@ package com.school.sba.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,12 +20,16 @@ public class SchoolController {
 	@Autowired
 	private SchoolService schoolservice;
 
-	@PostMapping("/user/{userId}/schools")
-public ResponseEntity<ResponseStructure<SchoolResponse>> createSchool( @PathVariable int userId ,@RequestBody SchoolRequest schoolRequest){
+	@PreAuthorize(value = "hasAuthority('ADMIN')")
+	@PostMapping("/schools")
+public ResponseEntity<ResponseStructure<SchoolResponse>> createSchool( @RequestBody SchoolRequest schoolRequest){
 	
-		return schoolservice.createSchool(userId, schoolRequest);
+		return schoolservice.createSchool( schoolRequest);
 }
 
-	
+	@DeleteMapping(path="/school/{schoolId}")
+	public ResponseEntity<ResponseStructure<SchoolResponse>> deleteByID(@PathVariable int schoolId){
+		return schoolservice.deleteById(schoolId);
+	}
 
 }

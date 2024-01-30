@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,12 +33,15 @@ public class AcademicProgram {
 	private String programName;
 	private LocalDate beginsAt;
 	private LocalDate endsAt;
+	private boolean isDeleted;
 
 	@ManyToOne
 	private School school;
 	@ManyToMany
 	private List<Subject> subjects;
-	
+
 	@ManyToMany
 	private List<User> users;
+	@OneToMany(mappedBy = "academicProgram")
+	private List<ClassHour> classHours;
 }

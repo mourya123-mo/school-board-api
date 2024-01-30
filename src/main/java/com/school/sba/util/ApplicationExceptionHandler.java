@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.school.sba.exception.AlreadyClassHourAssoatedException;
 import com.school.sba.exception.ConstraintVoilationException;
 import com.school.sba.exception.DuplicateEntryException;
 import com.school.sba.exception.ScheduleNotFoundByIdException;
@@ -64,6 +65,11 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
 	@ExceptionHandler(ScheduleNotFoundByIdException.class)
 	public ResponseEntity<Object> handleScheduleNotFoundByIdException(ScheduleNotFoundByIdException ex){
 		return new ResponseEntity<Object>(structure(HttpStatus.NOT_FOUND, ex.getMessage(), "schedule not found by given id"),HttpStatus.NOT_FOUND);
+	}
+	
+	@ExceptionHandler(AlreadyClassHourAssoatedException.class)
+	public ResponseEntity<Object> handleAlreadyClassHourAssoatedException(AlreadyClassHourAssoatedException ex){
+		return new ResponseEntity<Object>(structure(HttpStatus.ALREADY_REPORTED, ex.getMessage(), "already classhour assoated"),HttpStatus.ALREADY_REPORTED);
 	}
 
 			

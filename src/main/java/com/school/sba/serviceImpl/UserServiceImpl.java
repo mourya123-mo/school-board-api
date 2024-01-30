@@ -6,11 +6,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.school.sba.entity.School;
 import com.school.sba.entity.User;
 import com.school.sba.enums.UserRole;
-import com.school.sba.exception.ConstraintVoilationException;
 import com.school.sba.exception.DuplicateEntryException;
 import com.school.sba.exception.UserNotFoundByIdException;
+import com.school.sba.repository.AcademicProgramRepo;
 import com.school.sba.repository.UserRepo;
 import com.school.sba.requestdto.UserRequest;
 import com.school.sba.responsedto.UserResponse;
@@ -21,7 +22,7 @@ import jakarta.validation.Valid;
 
 @Service
 public class UserServiceImpl implements UserService {
-	
+
 	@Autowired
 	private PasswordEncoder encoder;
 
@@ -29,19 +30,19 @@ public class UserServiceImpl implements UserService {
 	private UserRepo userRepo;
 	@Autowired
 	private ResponseStructure<UserResponse> structure;
+	
+	@Autowired
+	private AcademicProgramRepo academicProgramRepo;
+	
 
 	private User mapToUserRequest(UserRequest request) {
-		return User.builder().userName(request.getUserName())
-				.password(encoder.encode(request.getPassword()))
-				.firstName(request.getFirstName())
-				.lastName(request.getLastName()).
-				contactNo(request.getContactNo())
-				.email(request.getEmail())
-				.userRole(request.getUserRole()).build();
+		return User.builder().userName(request.getUserName()).password(encoder.encode(request.getPassword()))
+				.firstName(request.getFirstName()).lastName(request.getLastName()).contactNo(request.getContactNo())
+				.email(request.getEmail()).userRole(request.getUserRole()).build();
 
 	}
 
-	private UserResponse mapToUserResponse(User user) {
+	public UserResponse mapToUserResponse(User user) {
 
 		return UserResponse.builder().userId(user.getUserId()).userName(user.getUserName())
 				.firstName(user.getFirstName()).lastName(user.getLastName()).contactNo(user.getContactNo())
@@ -51,43 +52,22 @@ public class UserServiceImpl implements UserService {
 	/*----------------------------->To regester user <-----------------------------*/
 	int count = 0;
 
-	@Override
-//	public ResponseEntity<ResponseStructure<UserResponse>> regesterAdmin(@Valid UserRequest userRequest, int userId) {
-//		User user = mapToUserRequest(userRequest);
-//		user.setDeleted(false);
-//		boolean exisexistsByUserRole = userRepo.exisexistsByUserRole(UserRole.ADMIN);
-//		if(exisexistsByUserRole==false||user.getUserRole()!= UserRole.ADMIN) {
-//			try {
-//			userRepo.save(user);
-//			}catch (Exception e) {
-//				throw new ConstraintVoilationException("please check the user Details already exist");
-//			}
-//			structure.setStatus(HttpStatus.CREATED.value());
-//			structure.setMessage("user Sucessfully saved");
-//			structure.setData(mapToUserResponse(user));
-//			
-//		}else {
-//			throw new ConstraintVoilationException("there should be only one admin ! admin is already exist");
-//		}
-//		return new ResponseEntity<ResponseStructure<UserResponse>>(structure,HttpStatus.CREATED) ;
-//	}
-	public ResponseEntity<ResponseStructure<UserResponse>> regesterUser(UserRequest userRequest) {
+	public ResponseEntity<ResponseStructure<UserResponse>> addOtherUser(UserRequest userRequest) {
 		User user = mapToUserRequest(userRequest);
 		user.setDeleted(false);
-		boolean userrole = userRepo.existsByUserRole(UserRole.ADMIN);
-		if (userrole == false ||user.getUserRole()!=UserRole.ADMIN) {
-			try {
-				user = userRepo.save(user);
-			} catch (Exception e) {
-				throw new DuplicateEntryException("username should be unique");
-			}
+		User user1 = userRepo.findByUserRole(UserRole.ADMIN)
+				.orElseThrow(() -> new UserNotFoundByIdException("admin role not found"));
+
+		if (user.getUserRole() != UserRole.ADMIN) {
+			School school = user1.getSchool();
+			user.setSchool(school);
+			userRepo.save(user);
 			structure.setStatus(HttpStatus.CREATED.value());
 			structure.setMessage("data saved sucessful");
 			structure.setData(mapToUserResponse(user));
-		}
-		 else {
+		} else {
 			throw new DuplicateEntryException("there can only be one admin");
-					
+
 		}
 		return new ResponseEntity<ResponseStructure<UserResponse>>(structure, HttpStatus.CREATED);
 	}
@@ -126,5 +106,25 @@ public class UserServiceImpl implements UserService {
 		return new ResponseEntity<ResponseStructure<UserResponse>>(structure, HttpStatus.OK);
 	}
 
+	@Override
+	public ResponseEntity<ResponseStructure<UserResponse>> regesterAdmin(@Valid UserRequest userRequest) {
+		User user = mapToUserRequest(userRequest);
+		user.setDeleted(false);
+		boolean role = userRepo.existsByUserRole(UserRole.ADMIN);
+		if (role == false && user.getUserRole() != UserRole.STUDENT && user.getUserRole() != UserRole.TEACHER) {
 
+			userRepo.save(user);
+
+			structure.setStatus(HttpStatus.OK.value());
+			structure.setMessage("admin saved sucessfully");
+			structure.setData(mapToUserResponse(user));
+		} else {
+			throw new DuplicateEntryException("only admin role can be registered");
+		}
+		return new ResponseEntity<ResponseStructure<UserResponse>>(structure, HttpStatus.OK);
+	}
+
+	
+
+	
 }

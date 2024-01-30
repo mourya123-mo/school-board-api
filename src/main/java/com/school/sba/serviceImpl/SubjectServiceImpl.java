@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -102,27 +101,26 @@ public class SubjectServiceImpl implements SubjectService {
 		subjectStructure.setStatus(HttpStatus.FOUND.value());
 		subjectStructure.setMessage("subject found sucessfully");
 		subjectStructure.setData(subjectList);
-		
-		
-		
-		return new ResponseEntity<ResponseStructure<List<Subject>>>(subjectStructure,HttpStatus.FOUND);
+
+		return new ResponseEntity<ResponseStructure<List<Subject>>>(subjectStructure, HttpStatus.FOUND);
 	}
 
 	@Override
 	public ResponseEntity<ResponseStructure<User>> addSubjectToTeacher(int subjectId, int userId) {
-		Subject subject = subjectRepo.findById(subjectId).orElseThrow(()-> new UserNotFoundByIdException("id not present in database"));
-	User user=	userRepo.findById(userId).orElseThrow(()-> new UserNotFoundByIdException("user with given id is not found"));
-	if(user.getUserRole().equals(UserRole.TEACHER)) {
-		user.setSubject(subject);
-		userRepo.save(user);
-		userStructure.setMessage("subject updated to user");
-		userStructure.setStatus(HttpStatus.OK.value());
-		userStructure.setData(user);
-	}else {
-		throw new ConstraintVoilationException("subject cannot set to user");
+		Subject subject = subjectRepo.findById(subjectId)
+				.orElseThrow(() -> new UserNotFoundByIdException("id not present in database"));
+		User user = userRepo.findById(userId)
+				.orElseThrow(() -> new UserNotFoundByIdException("user with given id is not found"));
+		if (user.getUserRole().equals(UserRole.TEACHER)) {
+			user.setSubject(subject);
+			userRepo.save(user);
+			userStructure.setMessage("subject updated to user");
+			userStructure.setStatus(HttpStatus.OK.value());
+			userStructure.setData(user);
+		} else {
+			throw new ConstraintVoilationException("subject cannot set to user");
+		}
+		return new ResponseEntity<ResponseStructure<User>>(userStructure, HttpStatus.OK);
 	}
-		return new ResponseEntity<ResponseStructure<User>>(userStructure,HttpStatus.OK) ;
-	}
-	
 
 }

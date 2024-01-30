@@ -39,7 +39,9 @@ public class ScheduleServiceImpl implements ScheduleService {
 				.breakTime(schedule.getBreakTime())
 				.breakLengthInMinutes((int) schedule.getBreakLengthInMinutes().toMinutes())
 				.lunchTime(schedule.getLunchTime())
-				.lunchLengthInMinutes((int) schedule.getLunchLengthInMinutes().toMinutes()).build();
+				.lunchLengthInMinutes((int) schedule.getLunchLengthInMinutes().toMinutes())
+				.classHoursLengthInMinutes((int)schedule.getClassHoursLengthInMinutes().toMinutes())
+				.build();
 	}
 
 	private Schedule mapToSchedule(ScheduleRequest scheduleRquest) {
@@ -49,7 +51,9 @@ public class ScheduleServiceImpl implements ScheduleService {
 				.breakTime(scheduleRquest.getBreakTime())
 				.breakLengthInMinutes(Duration.ofMinutes(scheduleRquest.getBreakLengthInMinutes()))
 				.lunchTime(scheduleRquest.getLunchTime())
-				.lunchLengthInMinutes(Duration.ofMinutes(scheduleRquest.getLunchLengthInMinutes())).build();
+				.lunchLengthInMinutes(Duration.ofMinutes(scheduleRquest.getLunchLengthInMinutes()))
+				.classHoursLengthInMinutes(Duration.ofMinutes(scheduleRquest.getClassHoursLengthInMinutes()))
+				.build();
 	}
 
 	@Override
@@ -99,6 +103,13 @@ public class ScheduleServiceImpl implements ScheduleService {
 			structure.setData(scheduleResponse);
 			return new ResponseEntity<ResponseStructure<ScheduleResponse>>(structure, HttpStatus.OK);
 		}).orElseThrow(() -> new ScheduleNotFoundByIdException("schedule data not found by id"));
+	}
+
+	@Override
+	public ResponseEntity<ResponseStructure<ScheduleResponse>> deleteSchedule(Schedule schedule) {
+		if(schedule!=null)
+		scheduleRepo.delete(schedule);
+		return new ResponseEntity<ResponseStructure<ScheduleResponse>>(null);
 	}
 
 }

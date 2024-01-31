@@ -1,17 +1,23 @@
 package com.school.sba.serviceImpl;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.school.sba.entity.ClassHour;
 import com.school.sba.entity.School;
 import com.school.sba.entity.User;
 import com.school.sba.enums.UserRole;
+import com.school.sba.exception.ConstraintVoilationException;
 import com.school.sba.exception.DuplicateEntryException;
 import com.school.sba.exception.UserNotFoundByIdException;
 import com.school.sba.repository.AcademicProgramRepo;
+import com.school.sba.repository.ClassHourRepo;
 import com.school.sba.repository.UserRepo;
 import com.school.sba.requestdto.UserRequest;
 import com.school.sba.responsedto.UserResponse;
@@ -30,10 +36,12 @@ public class UserServiceImpl implements UserService {
 	private UserRepo userRepo;
 	@Autowired
 	private ResponseStructure<UserResponse> structure;
-	
+
 	@Autowired
 	private AcademicProgramRepo academicProgramRepo;
-	
+
+	@Autowired
+	private ClassHourRepo classHourRepo;
 
 	private User mapToUserRequest(UserRequest request) {
 		return User.builder().userName(request.getUserName()).password(encoder.encode(request.getPassword()))
@@ -124,7 +132,24 @@ public class UserServiceImpl implements UserService {
 		return new ResponseEntity<ResponseStructure<UserResponse>>(structure, HttpStatus.OK);
 	}
 
-	
+	public String perminentDelete() {
+		List<User> deleted = userRepo.findByIsDeleted(true);
+		deleted.forEach(user -> {
+			if (!(user.getUserRole().equals(UserRole.ADMIN))) {
+				user.setDeleted(true);
+				user.setAcademicPrograms(null);
+				userRepo.save(user);
+				List<ClassHour> classHour = classHourRepo.findByUser(user);
+				classHour.forEach(Hour -> {
+					Hour.setUser(null);
+					classHourRepo.save(Hour);
 
-	
+				});
+				userRepo.save(user);
+				userRepo.delete(user);
+			}
+		});
+		return "user deleted sucessful";
+	}
+
 }

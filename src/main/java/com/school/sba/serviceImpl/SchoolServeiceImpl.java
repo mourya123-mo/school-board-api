@@ -1,5 +1,6 @@
 package com.school.sba.serviceImpl;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,10 +9,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.school.sba.entity.AcademicProgram;
+import com.school.sba.entity.ClassHour;
 import com.school.sba.entity.School;
+import com.school.sba.entity.User;
 import com.school.sba.enums.UserRole;
 import com.school.sba.exception.ConstraintVoilationException;
 import com.school.sba.exception.UserNotFoundByIdException;
+import com.school.sba.repository.AcademicProgramRepo;
+import com.school.sba.repository.ClassHourRepo;
 import com.school.sba.repository.SchoolRepo;
 import com.school.sba.repository.UserRepo;
 import com.school.sba.requestdto.SchoolRequest;
@@ -28,6 +34,10 @@ public class SchoolServeiceImpl implements SchoolService {
 	private SchoolRepo schoolRepo;
 	@Autowired
 	ResponseStructure<SchoolResponse> structure;
+	@Autowired
+	private ClassHourRepo classHourRepo;
+	@Autowired
+	private AcademicProgramRepo academicProgramRepo;
 
 	private School mapToSchool(SchoolRequest schoolrequest) {
 		return School.builder().schoolName(schoolrequest.getSchoolName()).Adress(schoolrequest.getAdress())
@@ -76,5 +86,26 @@ public class SchoolServeiceImpl implements SchoolService {
 		structure.setData(mapToSchoolResponse(school));
 		
 		return new ResponseEntity<ResponseStructure<SchoolResponse>>(structure,HttpStatus.OK);
+	}
+	public String perminentDelete() {
+		List<School> schools = schoolRepo.findByIsDeleted(true);
+		schools.forEach(school->{
+			List<AcademicProgram> programs = school.getAcademicPrograms();
+			programs.forEach(program->{
+				List<ClassHour> classHours = program.getClassHours();
+				classHourRepo.deleteAll(classHours);
+			});
+			academicProgramRepo.deleteAll(programs);
+			List<User> users = userRepo.findBySchool(school);
+			users.forEach(user->{
+				if(user.getUserRole().equals(UserRole.ADMIN)) {
+					users.remove(user);
+				}
+			});
+			userRepo.deleteAll(users);
+			schoolRepo.deleteAll(schools);
+		});
+		return "school deleted";
+		
 	}
 }

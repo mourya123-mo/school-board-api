@@ -2,6 +2,7 @@ package com.school.sba.entity;
 
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -34,10 +35,10 @@ public class School {
 
 	@OneToMany
 	private List<User> users;
-	@OneToMany
+	@OneToMany(mappedBy = "school")
 	private List<AcademicProgram> academicPrograms;
 
-	@OneToOne
+	@OneToOne(cascade = CascadeType.REMOVE)
 	private Schedule schedule;
 
 }

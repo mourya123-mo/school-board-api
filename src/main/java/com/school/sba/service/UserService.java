@@ -21,6 +21,8 @@ public interface UserService  {
 
 	ResponseEntity<ResponseStructure<UserResponse>> regesterAdmin(@Valid UserRequest userRequest);
 
+	
+
 
 
 

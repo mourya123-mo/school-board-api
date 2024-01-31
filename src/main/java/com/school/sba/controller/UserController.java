@@ -43,6 +43,7 @@ public class UserController {
 		return userService.getUserById(userId);
 	}
 
+	// soft delete
 	@PreAuthorize(value = "hasAuthority('ADMIN')")
 	@DeleteMapping("/users/{userId}")
 	public ResponseEntity<ResponseStructure<UserResponse>> deleteUserById(@PathVariable int userId){
@@ -50,6 +51,7 @@ public class UserController {
 		return userService.deleteUserById(userId);
 	}
 
+	
 	
 	
 	

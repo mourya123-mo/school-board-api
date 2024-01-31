@@ -16,6 +16,7 @@ import com.school.sba.enums.UserRole;
 import com.school.sba.exception.ConstraintVoilationException;
 import com.school.sba.exception.UserNotFoundByIdException;
 import com.school.sba.repository.AcademicProgramRepo;
+import com.school.sba.repository.ClassHourRepo;
 import com.school.sba.repository.SchoolRepo;
 import com.school.sba.repository.UserRepo;
 import com.school.sba.requestdto.AcademicProgramRequest;
@@ -47,6 +48,9 @@ public class AcademicProgramServiceImpl implements AcademicProgramService {
 	private UserRepo userRepo;
 	@Autowired
 	private UserServiceImpl userServiceImpl;
+	
+	@Autowired
+	private ClassHourRepo classHourRepo;
 
 	@Override
 	public ResponseEntity<ResponseStructure<AcademicProgramResponse>> saveAcademicProgram(
@@ -138,6 +142,17 @@ public class AcademicProgramServiceImpl implements AcademicProgramService {
 		structure.setMessage("softdelete sucessful");
 		structure.setStatus(HttpStatus.OK.value());
 		return new ResponseEntity<ResponseStructure<AcademicProgramResponse>>(structure,HttpStatus.OK);
+	}
+	public String perminentDelete() {
+		
+		List<AcademicProgram> Deleted = programRepo.findByIsDeleted(true);
+		Deleted.forEach(program->{
+			classHourRepo.deleteAll(program.getClassHours());
+			programRepo.delete(program);
+		});
+		
+		return "Acdemic program deleted";
+		
 	}
 
 }

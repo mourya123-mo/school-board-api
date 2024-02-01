@@ -16,4 +16,6 @@ public interface ClassHourService {
 
 	ResponseEntity<ResponseStructure<ClassHourRequest>> deleteClassHour(List<ClassHour> classHours);
 
+	ResponseEntity<ResponseStructure<List<ClassHour>>> createClassHoursForNextweek(int programId);
+
 }

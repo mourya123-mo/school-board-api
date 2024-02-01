@@ -48,7 +48,7 @@ public class AcademicProgramServiceImpl implements AcademicProgramService {
 	private UserRepo userRepo;
 	@Autowired
 	private UserServiceImpl userServiceImpl;
-	
+
 	@Autowired
 	private ClassHourRepo classHourRepo;
 
@@ -133,26 +133,28 @@ public class AcademicProgramServiceImpl implements AcademicProgramService {
 
 	@Override
 	public ResponseEntity<ResponseStructure<AcademicProgramResponse>> deleteById(int programId) {
-		AcademicProgram program = programRepo.findById(programId).orElseThrow(()-> new UserNotFoundByIdException("given id is not present in database"));
-		if(program.isDeleted()==false) {
+		AcademicProgram program = programRepo.findById(programId)
+				.orElseThrow(() -> new UserNotFoundByIdException("given id is not present in database"));
+		if (program.isDeleted() == false) {
 			program.setDeleted(true);
 			programRepo.save(program);
 		}
 		structure.setData(mapToAcademicResponseProgram(program));
 		structure.setMessage("softdelete sucessful");
 		structure.setStatus(HttpStatus.OK.value());
-		return new ResponseEntity<ResponseStructure<AcademicProgramResponse>>(structure,HttpStatus.OK);
+		return new ResponseEntity<ResponseStructure<AcademicProgramResponse>>(structure, HttpStatus.OK);
 	}
+
 	public String perminentDelete() {
-		
+
 		List<AcademicProgram> Deleted = programRepo.findByIsDeleted(true);
-		Deleted.forEach(program->{
+		Deleted.forEach(program -> {
 			classHourRepo.deleteAll(program.getClassHours());
 			programRepo.delete(program);
 		});
-		
+
 		return "Acdemic program deleted";
-		
+
 	}
 
 }
